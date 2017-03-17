@@ -8,12 +8,12 @@ namespace Arechi.GroupBank
 {
     public class CGMoney : IRocketCommand
     {
-        public string Help { get { return "Add or retrieve money from group bank"; } }
         public string Name { get { return "gmoney"; } }
+        public string Help { get { return "Add or retrieve money from group bank"; } }
         public string Syntax { get { return "<+|-> <amount>"; } }
         public List<string> Aliases { get { return new List<string>(); } }
-        public AllowedCaller AllowedCaller { get { return AllowedCaller.Player; } }
         public List<string> Permissions { get { return new List<string>() { "gmoney" }; } }
+        public AllowedCaller AllowedCaller { get { return AllowedCaller.Player; } }    
 
         public void Execute(IRocketPlayer caller, string[] command)
         {
@@ -25,7 +25,7 @@ namespace Arechi.GroupBank
                     if (string.Compare(command[0], "+", true) == 0) //Deposit money to bank
                     {
                         int money;
-                        if (!Int32.TryParse(command[1], out money))
+                        if (!Int32.TryParse(command[1], out money) || (Int32.TryParse(command[1], out money) && money <= 0 ))
                         {
                             Plugin.Instance.Say(player, "dep_error"); return;
                         }
@@ -43,7 +43,7 @@ namespace Arechi.GroupBank
                     if (string.Compare(command[0], "-", true) == 0) //Withdraw money from bank
                     {
                         int money;
-                        if (!Int32.TryParse(command[1], out money))
+                        if (!Int32.TryParse(command[1], out money) || (Int32.TryParse(command[1], out money) && money <= 0))
                         {
                             Plugin.Instance.Say(player, "wit_error"); return;
                         }

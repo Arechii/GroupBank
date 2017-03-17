@@ -6,12 +6,13 @@ namespace Arechi.GroupBank
 {
     public class CGBank : IRocketCommand
     {
-        public string Help { get { return "Show current group bank status"; } }
         public string Name { get { return "gbank"; } }
+        public string Help { get { return "Show current group bank status"; } }
         public string Syntax { get { return ""; } }
         public List<string> Aliases { get { return new List<string>(); } }
-        public AllowedCaller AllowedCaller { get { return AllowedCaller.Player; } }
         public List<string> Permissions { get { return new List<string>() { "gbank" }; } }
+        public AllowedCaller AllowedCaller { get { return AllowedCaller.Player; } }
+        
 
         public void Execute(IRocketPlayer caller, string[] command)
         {

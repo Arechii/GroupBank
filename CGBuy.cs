@@ -8,12 +8,13 @@ namespace Arechi.GroupBank
 {
     public class CGBuy : IRocketCommand
     {
-        public string Help { get { return "Buys a bank for your group"; } }
         public string Name { get { return "gbuy"; } }
+        public string Help { get { return "Buys a bank for your group"; } }
         public string Syntax { get { return ""; } }
         public List<string> Aliases { get { return new List<string>(); } }
-        public AllowedCaller AllowedCaller { get { return AllowedCaller.Player; } }
         public List<string> Permissions { get { return new List<string>() { "gbuy" }; } }
+        public AllowedCaller AllowedCaller { get { return AllowedCaller.Player; } }
+        
 
         public void Execute(IRocketPlayer caller, string[] command)
         {

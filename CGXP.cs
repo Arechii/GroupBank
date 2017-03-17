@@ -7,12 +7,13 @@ namespace Arechi.GroupBank
 {
     public class CGXP : IRocketCommand
     {
-        public string Help { get { return "Add or retrieve experience from group bank"; } }
         public string Name { get { return "gxp"; } }
+        public string Help { get { return "Add or retrieve experience from group bank"; } }
         public string Syntax { get { return "<+|-> <amount>"; } }
         public List<string> Aliases { get { return new List<string>(); } }
-        public AllowedCaller AllowedCaller { get { return AllowedCaller.Player; } }
         public List<string> Permissions { get { return new List<string>() { "gxp" }; } }
+        public AllowedCaller AllowedCaller { get { return AllowedCaller.Player; } }
+        
 
         public void Execute(IRocketPlayer caller, string[] command)
         {
@@ -24,7 +25,7 @@ namespace Arechi.GroupBank
                     if (string.Compare(command[0], "+", true) == 0) //Deposit xp to bank
                     {
                         int xp;
-                        if (!Int32.TryParse(command[1], out xp))
+                        if (!Int32.TryParse(command[1], out xp) || (Int32.TryParse(command[1], out xp) && xp <= 0))
                         {
                             Plugin.Instance.Say(player, "dep_error"); return;
                         }
@@ -42,7 +43,7 @@ namespace Arechi.GroupBank
                     if (string.Compare(command[0], "-", true) == 0) //Withdraw xp from bank
                     {
                         int xp;
-                        if (!Int32.TryParse(command[1], out xp))
+                        if (!Int32.TryParse(command[1], out xp) || (Int32.TryParse(command[1], out xp) && xp <= 0))
                         {
                             Plugin.Instance.Say(player, "wit_error"); return;
                         }
