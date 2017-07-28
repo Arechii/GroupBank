@@ -8,43 +8,39 @@ namespace Arechi.GroupBank
 {
     public class CGBuy : IRocketCommand
     {
-        public string Name { get { return "gbuy"; } }
-        public string Help { get { return "Buys a bank for your group"; } }
-        public string Syntax { get { return ""; } }
-        public List<string> Aliases { get { return new List<string>(); } }
-        public List<string> Permissions { get { return new List<string>() { "gbuy" }; } }
-        public AllowedCaller AllowedCaller { get { return AllowedCaller.Player; } }
+        public string Name => "gbuy";
+        public string Help => "Buys a bank for your group";
+        public string Syntax => string.Empty;
+        public List<string> Aliases => new List<string>();
+        public List<string> Permissions => new List<string>() { "gbuy" };
+        public AllowedCaller AllowedCaller => AllowedCaller.Player;
         
-
         public void Execute(IRocketPlayer caller, string[] command)
         {
             UnturnedPlayer player = (UnturnedPlayer)caller;
-            if (command.Length == 0)
+
+            if (player.SteamGroupID == CSteamID.Nil)
             {
-                if (player.SteamGroupID == CSteamID.Nil)
-                {
-                    Plugin.Instance.Say(player, "no_group"); return;
-                }
-
-                if (Plugin.Instance.Bank.HasBank(player.SteamGroupID.ToString()))
-                {
-                    Plugin.Instance.Say(player, "have_bank"); return;
-                }
-
-                if (Uconomy.Instance.Database.GetBalance(player.ToString()) < Plugin.Instance.Configuration.Instance.BankPrice)
-                {
-                    Plugin.Instance.Say(player, "bank_error_2", Plugin.Instance.Configuration.Instance.BankPrice, Plugin.Instance.Configuration.Instance.MoneyName); return;
-                }
-
-                Uconomy.Instance.Database.IncreaseBalance(player.ToString(), -Plugin.Instance.Configuration.Instance.BankPrice);
-                Plugin.Instance.Bank.SetBank(player.SteamGroupID.ToString());
-                Plugin.Instance.Say(player, "bank_bought", Plugin.Instance.Configuration.Instance.BankPrice, Plugin.Instance.Configuration.Instance.MoneyName);
-                Plugin.Instance.Notify(player.CSteamID, player.SteamGroupID, player.DisplayName + " has bought a bank!");
+                Main.Instance.Say(player, "no_group");
+                return;
             }
-            else
+
+            if (Main.Instance.Bank.HasBank(player.SteamGroupID.ToString()))
             {
-                Plugin.Instance.Say(player, "gbuy_usage");
+                Main.Instance.Say(player, "have_bank");
+                return;
             }
+
+            if (Uconomy.Instance.Database.GetBalance(player.ToString()) < Main.Instance.Configuration.Instance.BankPrice)
+            {
+                Main.Instance.Say(player, "bank_error_2", Main.Instance.Configuration.Instance.BankPrice, Main.Instance.Configuration.Instance.MoneyName);
+                return;
+            }
+
+            Uconomy.Instance.Database.IncreaseBalance(player.ToString(), -Main.Instance.Configuration.Instance.BankPrice);
+            Main.Instance.Bank.SetBank(player.SteamGroupID.ToString());
+            Main.Instance.Say(player, "bank_bought", Main.Instance.Configuration.Instance.BankPrice, Main.Instance.Configuration.Instance.MoneyName);
+            Main.Instance.Notify(player, $"{player.DisplayName} has bought a bank!");
         }
     }
 }

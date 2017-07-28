@@ -6,29 +6,22 @@ namespace Arechi.GroupBank
 {
     public class CGBank : IRocketCommand
     {
-        public string Name { get { return "gbank"; } }
-        public string Help { get { return "Show current group bank status"; } }
-        public string Syntax { get { return ""; } }
-        public List<string> Aliases { get { return new List<string>(); } }
-        public List<string> Permissions { get { return new List<string>() { "gbank" }; } }
-        public AllowedCaller AllowedCaller { get { return AllowedCaller.Player; } }
+        public string Name => "gbank";
+        public string Help => "Show current group bank status";
+        public string Syntax => string.Empty;
+        public List<string> Aliases => new List<string>();
+        public List<string> Permissions => new List<string>() { "gbank" };
+        public AllowedCaller AllowedCaller => AllowedCaller.Player;
         
-
         public void Execute(IRocketPlayer caller, string[] command)
         {
             UnturnedPlayer player = (UnturnedPlayer)caller;
-            if (command.Length == 0)
+
+            if (Main.Instance.CheckPlayer(player) == true)
             {
-                if (Plugin.Instance.CheckPlayer(player) == true)
-                {
-                    Plugin.Instance.Say(player, "bank");
-                    Plugin.Instance.Say(player, "bank_xp", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Experience"));
-                    Plugin.Instance.Say(player, "bank_money", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"), Plugin.Instance.Configuration.Instance.MoneyName);
-                }
-            }
-            else
-            {
-                Plugin.Instance.Say(player, "gbank_usage");
+                Main.Instance.Say(player, "bank");
+                Main.Instance.Say(player, "bank_xp", Main.Instance.Bank.Get(player.SteamGroupID.ToString(), "Experience"));
+                Main.Instance.Say(player, "bank_money", Main.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"), Main.Instance.Configuration.Instance.MoneyName);
             }
         }
     }

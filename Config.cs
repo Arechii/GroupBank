@@ -13,7 +13,7 @@ namespace Arechi.GroupBank
         public string DatabasePassword;
         public string DatabaseName;
         public string DatabaseTableName;
-        public int DatabasePort;
+        public uint DatabasePort;
 
         public void LoadDefaults()
         {

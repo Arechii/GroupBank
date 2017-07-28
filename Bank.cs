@@ -1,6 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
-using Rocket.Core.Logging;
 using System;
+using C = Rocket.Core.Logging.Logger;
 
 namespace Arechi.GroupBank
 {
@@ -11,39 +11,35 @@ namespace Arechi.GroupBank
         internal Bank()
         {
             new I18N.West.CP1250();
-            Table = Plugin.Instance.Configuration.Instance.DatabaseTableName;
-            MySqlConnection connection = createConnection();
-            try
+            MySqlConnection connection = CreateConnection();
+            if (connection == null)
             {
-                connection.Open();
-                connection.Close();
-
-                CheckBank();
+                Main.Instance.UnloadPlugin();
+                return;
             }
-            catch (MySqlException ex)
-            {
-                Logger.LogException(ex);
-            }
+            Table = Main.Instance.Configuration.Instance.DatabaseTableName;
+            CheckBank();
         }
 
-        private MySqlConnection createConnection()
+        private MySqlConnection CreateConnection()
         {
-            MySqlConnection connection = null;
             try
             {
-                if (Plugin.Instance.Configuration.Instance.DatabasePort == 0) Plugin.Instance.Configuration.Instance.DatabasePort = 3306;
-                connection = new MySqlConnection(String.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};PORT={4};", 
-                    Plugin.Instance.Configuration.Instance.DatabaseAddress, 
-                    Plugin.Instance.Configuration.Instance.DatabaseName, 
-                    Plugin.Instance.Configuration.Instance.DatabaseUsername,
-                    Plugin.Instance.Configuration.Instance.DatabasePassword,
-                    Plugin.Instance.Configuration.Instance.DatabasePort));
+                MySqlConnectionStringBuilder ConnectionString = new MySqlConnectionStringBuilder
+                {
+                    Server = Main.Instance.Configuration.Instance.DatabaseAddress,
+                    Port = Main.Instance.Configuration.Instance.DatabasePort,
+                    Database = Main.Instance.Configuration.Instance.DatabaseName,
+                    UserID = Main.Instance.Configuration.Instance.DatabaseUsername,
+                    Password = Main.Instance.Configuration.Instance.DatabasePassword,
+                };
+                return new MySqlConnection(ConnectionString.ToString()); ;
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
-            }
-            return connection;
+                C.LogWarning(ex.Message);
+                return null;
+            }  
         }
 
         public bool HasBank(string id)
@@ -51,18 +47,16 @@ namespace Arechi.GroupBank
             bool output = false;
             try
             {
-                MySqlConnection connection = createConnection();
+                MySqlConnection connection = CreateConnection();
                 MySqlCommand command = connection.CreateCommand();
-                command.CommandText = "SELECT `GroupID` FROM `" + Table + "` WHERE `GroupID` = '" + id + "';";
+                command.CommandText = $"SELECT `GroupID` FROM `{Table}` WHERE `GroupID` = '{id}';";
                 connection.Open();
                 object result = command.ExecuteScalar();
-                if (result != null) output = true;
+                if (result != null)
+                    output = true;
                 connection.Close();
             }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-            }
+            catch (Exception ex) { C.LogWarning(ex.Message); }
             return output;
         }
 
@@ -70,18 +64,15 @@ namespace Arechi.GroupBank
         {
             try
             {
-                MySqlConnection connection = createConnection();
+                MySqlConnection connection = CreateConnection();
                 MySqlCommand command = connection.CreateCommand();
-                command.CommandText = "INSERT INTO `" + Table + "` (`GroupID`) VALUES (@groupid);";
+                command.CommandText = $"INSERT INTO `{Table}` (`GroupID`) VALUES (@groupid);";
                 command.Parameters.AddWithValue("@groupid", id);
                 connection.Open();
                 command.ExecuteNonQuery();
                 connection.Dispose();
             }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-            }
+            catch (Exception ex) { C.LogWarning(ex.Message); }
         }
 
         public int Update(string id, string kind, int amount)
@@ -89,18 +80,17 @@ namespace Arechi.GroupBank
             int output = 0;
             try
             {
-                MySqlConnection connection = createConnection();
+                MySqlConnection connection = CreateConnection();
                 MySqlCommand command = connection.CreateCommand();
-                command.CommandText = "UPDATE `" + Table + "` SET `"+ kind + "` = `" + kind + "` + (" + amount + ") WHERE `GroupID` = '" + id + "'; SELECT `" + kind + "` FROM `" + Table + "` WHERE `GroupID` = '" + id + "'";
+                command.CommandText = $"UPDATE `{Table}` SET `{kind}` = `{kind}` + ({amount}) WHERE `GroupID` = '{id}';";
+                command.CommandText += $"SELECT `{kind}` FROM `{Table}` WHERE `GroupID` = '{id}'";
                 connection.Open();
                 object result = command.ExecuteScalar();
-                if (result != null) Int32.TryParse(result.ToString(), out output);
+                if (result != null)
+                    Int32.TryParse(result.ToString(), out output);
                 connection.Close();
             }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-            }
+            catch (Exception ex) { C.LogWarning(ex.Message); }
             return output;
         }
 
@@ -109,37 +99,33 @@ namespace Arechi.GroupBank
             int output = 0;
             try
             {
-                MySqlConnection connection = createConnection();
+                MySqlConnection connection = CreateConnection();
                 MySqlCommand command = connection.CreateCommand();
-                command.CommandText = "SELECT `" + kind + "` FROM `" + Table + "` WHERE `GroupID` = '" + id + "';";
+                command.CommandText = $"SELECT `{kind}` FROM `{Table}` WHERE `GroupID` = '{id}';";
                 connection.Open();
                 object result = command.ExecuteScalar();
-                if (result != null) Int32.TryParse(result.ToString(), out output);
+                if (result != null)
+                    Int32.TryParse(result.ToString(), out output);
                 connection.Close();
             }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-            }
+            catch (Exception ex) { C.LogWarning(ex.Message); }
             return output;
         }
 
         public int DeleteRows()
         {
+            int interval = Main.Instance.Configuration.Instance.InactiveDaysUntilDeletion;
             int affected = 0;
             try
             {
-                MySqlConnection mySqlConnection = createConnection();
-                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = "DELETE FROM `" + Table + "` WHERE `LastAccessed` < date_sub(now(), interval '" + Plugin.Instance.Configuration.Instance.InactiveDaysUntilDeletion + "' day);";
-                mySqlConnection.Open();
-                affected = mySqlCommand.ExecuteNonQuery();
-                mySqlConnection.Close();
+                MySqlConnection connection = CreateConnection();
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = $"DELETE FROM `{Table}` WHERE `LastAccessed` < DATE_SUB(NOW(), INTERVAL '{interval}' DAY);";
+                connection.Open();
+                affected = command.ExecuteNonQuery();
+                connection.Close();
             }
-            catch (Exception exception)
-            {
-                Logger.LogException(exception);
-            }
+            catch (Exception ex) { C.LogWarning(ex.Message); }
             return affected;
         }
 
@@ -147,29 +133,20 @@ namespace Arechi.GroupBank
         {
             try
             {
-                MySqlConnection connection = createConnection();
+                MySqlConnection connection = CreateConnection();
                 MySqlCommand command = connection.CreateCommand();
-                command.CommandText = "show tables like '" + Table + "'";
-                connection.Open();
-                object test = command.ExecuteScalar();
-
-                if (test == null)
-                {
-                    command.CommandText = "CREATE TABLE `" + Table + "` ("
+                command.CommandText = 
+                    "CREATE TABLE IF NOT EXISTS `" + Table + "` ("
                         + " `GroupID` VARCHAR(32) NOT NULL,"
                         + " `Money` INT(32) NOT NULL DEFAULT '0',"
                         + " `Experience` INT(32) NOT NULL DEFAULT '0',"
                         + " `LastAccessed` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,"
                         + " PRIMARY KEY (`GroupID`)); ";
-
-                    command.ExecuteNonQuery();
-                }
+                connection.Open();
+                command.ExecuteNonQuery();
                 connection.Close();
             }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-            }
+            catch (Exception ex) { C.LogWarning(ex.Message); }
         }
     }
 }
