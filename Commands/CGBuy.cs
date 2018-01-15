@@ -4,15 +4,20 @@ using Rocket.Unturned.Player;
 using Steamworks;
 using System.Collections.Generic;
 
-namespace Arechi.GroupBank
+namespace Arechi.GroupBank.Commands
 {
     public class CGBuy : IRocketCommand
     {
         public string Name => "gbuy";
+
         public string Help => "Buys a bank for your group";
-        public string Syntax => string.Empty;
+
+        public string Syntax => "";
+
         public List<string> Aliases => new List<string>();
+
         public List<string> Permissions => new List<string>() { "gbuy" };
+
         public AllowedCaller AllowedCaller => AllowedCaller.Player;
         
         public void Execute(IRocketPlayer caller, string[] command)

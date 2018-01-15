@@ -79,10 +79,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bank.cs" />
-    <Compile Include="CGBank.cs" />
-    <Compile Include="CGBuy.cs" />
-    <Compile Include="CGMoney.cs" />
-    <Compile Include="CGXP.cs" />
+    <Compile Include="Commands\CGBank.cs" />
+    <Compile Include="Commands\CGBuy.cs" />
+    <Compile Include="Commands\CGMoney.cs" />
+    <Compile Include="Commands\CGXP.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

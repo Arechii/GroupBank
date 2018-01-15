@@ -5,6 +5,7 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
 using System;
+using System.Linq;
 using UnityEngine;
 using C = Rocket.Core.Logging.Logger;
 
@@ -14,13 +15,13 @@ namespace Arechi.GroupBank
     {
         public static Main Instance { get; private set; }
         public Bank Bank;
-        public Color color;
+        public Color Color;
 
         protected override void Load()
         {
             Instance = this;
             Bank = new Bank();
-            color = UnturnedChat.GetColorFromName(Configuration.Instance.Color, Color.green);
+            Color = UnturnedChat.GetColorFromName(Configuration.Instance.Color, Color.green);
             C.Log("GroupBank has been loaded!");
             C.Log($"{Bank.DeleteRows()} inactive banks have been deleted!", ConsoleColor.Yellow);
         }
@@ -31,21 +32,12 @@ namespace Arechi.GroupBank
             C.Log("GroupBank has been unloaded!");
         }
 
-        public void Say(UnturnedPlayer player, string key, params object[] args)
-        {
-            UnturnedChat.Say(player, Translate(key, args), color);
-        }
+        public void Say(UnturnedPlayer player, string key, params object[] args) => UnturnedChat.Say(player, Translate(key, args), Color);
 
         public void Notify(UnturnedPlayer player, string msg)
         {
-            Provider.clients.ForEach(p =>
-            {
-                if (p.playerID.group == player.SteamGroupID)
-                {
-                    ChatManager.instance.channel.send("tellChat", p.playerID.steamID, ESteamPacket.UPDATE_RELIABLE_BUFFER, 
-                        new object[] { player.CSteamID, (byte)EChatMode.GROUP, color, msg });
-                }
-            });
+            Provider.clients.Where(p => p.playerID.group == player.SteamGroupID).ToList().ForEach(p => 
+            ChatManager.instance.channel.send("tellChat", p.playerID.steamID, ESteamPacket.UPDATE_RELIABLE_BUFFER, new object[] { player.CSteamID, (byte)EChatMode.GROUP, Color, msg }));
         }
 
         public bool CheckPlayer(UnturnedPlayer player)

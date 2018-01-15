@@ -25,7 +25,7 @@ namespace Arechi.GroupBank
         {
             try
             {
-                MySqlConnectionStringBuilder ConnectionString = new MySqlConnectionStringBuilder
+                MySqlConnectionStringBuilder connectionString = new MySqlConnectionStringBuilder
                 {
                     Server = Main.Instance.Configuration.Instance.DatabaseAddress,
                     Port = Main.Instance.Configuration.Instance.DatabasePort,
@@ -33,7 +33,7 @@ namespace Arechi.GroupBank
                     UserID = Main.Instance.Configuration.Instance.DatabaseUsername,
                     Password = Main.Instance.Configuration.Instance.DatabasePassword,
                 };
-                return new MySqlConnection(ConnectionString.ToString()); ;
+                return new MySqlConnection(connectionString.ToString()); ;
             }
             catch (Exception ex)
             {
@@ -52,11 +52,16 @@ namespace Arechi.GroupBank
                 command.CommandText = $"SELECT `GroupID` FROM `{Table}` WHERE `GroupID` = '{id}';";
                 connection.Open();
                 object result = command.ExecuteScalar();
+
                 if (result != null)
                     output = true;
+
                 connection.Close();
             }
-            catch (Exception ex) { C.LogWarning(ex.Message); }
+            catch (Exception ex)
+            {
+                C.LogWarning(ex.Message);
+            }
             return output;
         }
 
@@ -72,7 +77,10 @@ namespace Arechi.GroupBank
                 command.ExecuteNonQuery();
                 connection.Dispose();
             }
-            catch (Exception ex) { C.LogWarning(ex.Message); }
+            catch (Exception ex)
+            {
+                C.LogWarning(ex.Message);
+            }
         }
 
         public int Update(string id, string kind, int amount)
@@ -86,11 +94,16 @@ namespace Arechi.GroupBank
                 command.CommandText += $"SELECT `{kind}` FROM `{Table}` WHERE `GroupID` = '{id}'";
                 connection.Open();
                 object result = command.ExecuteScalar();
+
                 if (result != null)
                     Int32.TryParse(result.ToString(), out output);
+
                 connection.Close();
             }
-            catch (Exception ex) { C.LogWarning(ex.Message); }
+            catch (Exception ex)
+            {
+                C.LogWarning(ex.Message);
+            }
             return output;
         }
 
@@ -104,11 +117,16 @@ namespace Arechi.GroupBank
                 command.CommandText = $"SELECT `{kind}` FROM `{Table}` WHERE `GroupID` = '{id}';";
                 connection.Open();
                 object result = command.ExecuteScalar();
+
                 if (result != null)
                     Int32.TryParse(result.ToString(), out output);
+
                 connection.Close();
             }
-            catch (Exception ex) { C.LogWarning(ex.Message); }
+            catch (Exception ex)
+            {
+                C.LogWarning(ex.Message);
+            }
             return output;
         }
 
@@ -125,7 +143,10 @@ namespace Arechi.GroupBank
                 affected = command.ExecuteNonQuery();
                 connection.Close();
             }
-            catch (Exception ex) { C.LogWarning(ex.Message); }
+            catch (Exception ex)
+            {
+                C.LogWarning(ex.Message);
+            }
             return affected;
         }
 
@@ -136,17 +157,20 @@ namespace Arechi.GroupBank
                 MySqlConnection connection = CreateConnection();
                 MySqlCommand command = connection.CreateCommand();
                 command.CommandText = 
-                    "CREATE TABLE IF NOT EXISTS `" + Table + "` ("
-                        + " `GroupID` VARCHAR(32) NOT NULL,"
-                        + " `Money` INT(32) NOT NULL DEFAULT '0',"
-                        + " `Experience` INT(32) NOT NULL DEFAULT '0',"
-                        + " `LastAccessed` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,"
-                        + " PRIMARY KEY (`GroupID`)); ";
+                    $@"CREATE TABLE IF NOT EXISTS `{Table}` (
+                       `GroupID` VARCHAR(32) NOT NULL,
+                       `Money` INT(32) NOT NULL DEFAULT '0',
+                       `Experience` INT(32) NOT NULL DEFAULT '0',
+                       `LastAccessed` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+                       PRIMARY KEY (`GroupID`));";
                 connection.Open();
                 command.ExecuteNonQuery();
                 connection.Close();
             }
-            catch (Exception ex) { C.LogWarning(ex.Message); }
+            catch (Exception ex)
+            {
+                C.LogWarning(ex.Message);
+            }
         }
     }
 }
