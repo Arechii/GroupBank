@@ -1,23 +1,27 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Data;
 using C = Rocket.Core.Logging.Logger;
 
 namespace Arechi.GroupBank
 {
     public class Bank
     {
-        private string Table;
+        private string _table;
+        private MySqlConnection _connection;
 
         internal Bank()
         {
             new I18N.West.CP1250();
-            MySqlConnection connection = CreateConnection();
-            if (connection == null)
+            _connection = CreateConnection();
+
+            if (_connection == null)
             {
                 Main.Instance.UnloadPlugin();
                 return;
             }
-            Table = Main.Instance.Configuration.Instance.DatabaseTableName;
+
+            _table = Main.Instance.Configuration.Instance.DatabaseTableName;
             CheckBank();
         }
 
@@ -33,143 +37,138 @@ namespace Arechi.GroupBank
                     UserID = Main.Instance.Configuration.Instance.DatabaseUsername,
                     Password = Main.Instance.Configuration.Instance.DatabasePassword,
                 };
+
                 return new MySqlConnection(connectionString.ToString()); ;
             }
             catch (Exception ex)
             {
-                C.LogWarning(ex.Message);
+                C.LogError(ex.Message);
                 return null;
             }  
         }
 
+        private void CheckConnection()
+        {
+            if (_connection == null)
+                _connection = CreateConnection();
+
+            if (_connection.State != ConnectionState.Open)
+                _connection.Open();
+        }
+
         public bool HasBank(string id)
         {
-            bool output = false;
             try
             {
-                MySqlConnection connection = CreateConnection();
-                MySqlCommand command = connection.CreateCommand();
-                command.CommandText = $"SELECT `GroupID` FROM `{Table}` WHERE `GroupID` = '{id}';";
-                connection.Open();
-                object result = command.ExecuteScalar();
-
-                if (result != null)
-                    output = true;
-
-                connection.Close();
+                CheckConnection();
+                MySqlCommand command = _connection.CreateCommand();
+                command.CommandText = $"SELECT `GroupID` FROM `{_table}` WHERE `GroupID` = @group";
+                command.Prepare();
+                command.Parameters.AddWithValue("@group", id);
+                return command.ExecuteScalar() != null;
             }
             catch (Exception ex)
             {
-                C.LogWarning(ex.Message);
+                C.LogError(ex.Message);
+                return false;
             }
-            return output;
         }
 
         public void SetBank(string id)
         {
             try
             {
-                MySqlConnection connection = CreateConnection();
-                MySqlCommand command = connection.CreateCommand();
-                command.CommandText = $"INSERT INTO `{Table}` (`GroupID`) VALUES (@groupid);";
-                command.Parameters.AddWithValue("@groupid", id);
-                connection.Open();
+                CheckConnection();
+                MySqlCommand command = _connection.CreateCommand();
+                command.CommandText = $"INSERT INTO `{_table}` (`GroupID`) VALUES (@group)";
+                command.Prepare();
+                command.Parameters.AddWithValue("@group", id);
                 command.ExecuteNonQuery();
-                connection.Dispose();
             }
             catch (Exception ex)
             {
-                C.LogWarning(ex.Message);
+                C.LogError(ex.Message);
             }
         }
 
-        public int Update(string id, string kind, int amount)
+        public int Update(string id, string column, int amount)
         {
-            int output = 0;
             try
             {
-                MySqlConnection connection = CreateConnection();
-                MySqlCommand command = connection.CreateCommand();
-                command.CommandText = $"UPDATE `{Table}` SET `{kind}` = `{kind}` + ({amount}) WHERE `GroupID` = '{id}';";
-                command.CommandText += $"SELECT `{kind}` FROM `{Table}` WHERE `GroupID` = '{id}'";
-                connection.Open();
+                CheckConnection();
+                MySqlCommand command = _connection.CreateCommand();
+                command.CommandText = $"UPDATE `{_table}` SET `{column}` = `{column}` + @amount WHERE `GroupID` = @group;";
+                command.CommandText += $"SELECT `{column}` FROM `{_table}` WHERE `GroupID` = @group";
+                command.Prepare();
+                command.Parameters.AddWithValue("@group", id);
+                command.Parameters.AddWithValue("@amount", amount);
                 object result = command.ExecuteScalar();
 
-                if (result != null)
-                    Int32.TryParse(result.ToString(), out output);
-
-                connection.Close();
+                return result != null ? int.Parse(result.ToString()) : 0;
             }
             catch (Exception ex)
             {
-                C.LogWarning(ex.Message);
+                C.LogError(ex.Message);
+                return 0;
             }
-            return output;
         }
 
-        public int Get(string id, string kind)
+        public int Get(string id, string column)
         {
-            int output = 0;
             try
             {
-                MySqlConnection connection = CreateConnection();
-                MySqlCommand command = connection.CreateCommand();
-                command.CommandText = $"SELECT `{kind}` FROM `{Table}` WHERE `GroupID` = '{id}';";
-                connection.Open();
+                CheckConnection();
+                MySqlCommand command = _connection.CreateCommand();
+                command.CommandText = $"SELECT `{column}` FROM `{_table}` WHERE `GroupID` = @group";
+                command.Prepare();
+                command.Parameters.AddWithValue("@group", id);
                 object result = command.ExecuteScalar();
 
-                if (result != null)
-                    Int32.TryParse(result.ToString(), out output);
-
-                connection.Close();
+                return result != null ? int.Parse(result.ToString()) : 0;
             }
             catch (Exception ex)
             {
-                C.LogWarning(ex.Message);
+                C.LogError(ex.Message);
+                return 0;
             }
-            return output;
         }
 
         public int DeleteRows()
         {
-            int interval = Main.Instance.Configuration.Instance.InactiveDaysUntilDeletion;
-            int affected = 0;
             try
             {
-                MySqlConnection connection = CreateConnection();
-                MySqlCommand command = connection.CreateCommand();
-                command.CommandText = $"DELETE FROM `{Table}` WHERE `LastAccessed` < DATE_SUB(NOW(), INTERVAL '{interval}' DAY);";
-                connection.Open();
-                affected = command.ExecuteNonQuery();
-                connection.Close();
+                CheckConnection();
+                MySqlCommand command = _connection.CreateCommand();
+                command.CommandText = $"DELETE FROM `{_table}` WHERE `LastAccessed` < DATE_SUB(NOW(), INTERVAL @interval DAY)";
+                command.Prepare();
+                command.Parameters.AddWithValue("@interval", Main.Instance.Configuration.Instance.InactiveDaysUntilDeletion);
+                return command.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
-                C.LogWarning(ex.Message);
+                C.LogError(ex.Message);
+                return 0;
             }
-            return affected;
         }
 
         internal void CheckBank()
         {
             try
             {
-                MySqlConnection connection = CreateConnection();
-                MySqlCommand command = connection.CreateCommand();
+                CheckConnection();
+                MySqlCommand command = _connection.CreateCommand();
                 command.CommandText = 
-                    $@"CREATE TABLE IF NOT EXISTS `{Table}` (
+                    $@"CREATE TABLE IF NOT EXISTS `{_table}` (
                        `GroupID` VARCHAR(32) NOT NULL,
                        `Money` INT(32) NOT NULL DEFAULT '0',
                        `Experience` INT(32) NOT NULL DEFAULT '0',
                        `LastAccessed` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
                        PRIMARY KEY (`GroupID`));";
-                connection.Open();
                 command.ExecuteNonQuery();
-                connection.Close();
             }
             catch (Exception ex)
             {
-                C.LogWarning(ex.Message);
+                C.LogError(ex.Message);
             }
         }
     }
