@@ -39,8 +39,7 @@ namespace Arechi.GroupBank
             Provider.clients
                 .Where(p => p.playerID.group == player.SteamGroupID)
                 .ToList()
-                .ForEach(p => ChatManager.instance.channel.send("tellChat", p.playerID.steamID, ESteamPacket.UPDATE_RELIABLE_BUFFER, 
-                player.CSteamID, "", EChatMode.GROUP, Color, false, msg));
+                .ForEach(p => ChatManager.serverSendMessage(msg, Color, player.SteamPlayer(), p, EChatMode.GROUP));
         }
 
         public bool CheckPlayer(UnturnedPlayer player)
