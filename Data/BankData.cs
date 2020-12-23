@@ -59,6 +59,10 @@ namespace Arechi.GroupBank.Data
                     PRIMARY KEY (`GroupId`)
                 );"
              );
+
+            //Migrate
+            _dbConnection.ExecuteNonQuery($"ALTER TABLE `{_table}` CHANGE COLUMN `GroupID` `GroupId` VARCHAR(32);");
+            _dbConnection.ExecuteNonQuery($"ALTER TABLE `{_table}` MODIFY `Money` DECIMAL(15,2) NOT NULL DEFAULT 0;");
         }
     }
 }
