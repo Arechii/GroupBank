@@ -43,13 +43,13 @@ namespace Arechi.GroupBank.Commands
 
                 if (money > (uint)UconomyUtil.GetBalance(player.Id))
                 {
-                    Plugin.Instance.Say(player, "dep_error_3", (int)UconomyUtil.GetBalance(player.Id), Plugin.Instance.Configuration.Instance.MoneyName);
+                    Plugin.Instance.Say(player, "dep_error_3", (int)UconomyUtil.GetBalance(player.Id), UconomyUtil.MoneyName);
                     return;
                 }
 
                 UconomyUtil.IncreaseBalance(player.Id, -(int)money);
                 Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank"));
-                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", (int)money) + $" [+{money}]", Plugin.Instance.Configuration.Instance.MoneyName));
+                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", (int)money) + $" [+{money}]", UconomyUtil.MoneyName));
             }
 
             if (command[0].Equals("-")) //Withdraw money from bank
@@ -68,7 +68,7 @@ namespace Arechi.GroupBank.Commands
 
                 UconomyUtil.IncreaseBalance(player.Id, money);
                 Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank"));
-                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", -(int)money) + $" [-{money}]", Plugin.Instance.Configuration.Instance.MoneyName));
+                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", -(int)money) + $" [-{money}]", UconomyUtil.MoneyName));
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using Rocket.API;
+﻿using Arechi.GroupBank.Utils;
+using Rocket.API;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
 
@@ -26,7 +27,7 @@ namespace Arechi.GroupBank.Commands
             {
                 Plugin.Instance.Say(player, "bank");
                 Plugin.Instance.Say(player, "bank_xp", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Experience"));
-                Plugin.Instance.Say(player, "bank_money", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"), Plugin.Instance.Configuration.Instance.MoneyName);
+                Plugin.Instance.Say(player, "bank_money", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"), UconomyUtil.MoneyName);
             }
         }
     }

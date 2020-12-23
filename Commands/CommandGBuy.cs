@@ -38,13 +38,13 @@ namespace Arechi.GroupBank.Commands
 
             if (UconomyUtil.GetBalance(player.Id) < Plugin.Instance.Configuration.Instance.BankPrice)
             {
-                Plugin.Instance.Say(player, "bank_error_2", Plugin.Instance.Configuration.Instance.BankPrice, Plugin.Instance.Configuration.Instance.MoneyName);
+                Plugin.Instance.Say(player, "bank_error_2", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
                 return;
             }
 
             UconomyUtil.IncreaseBalance(player.Id, -Plugin.Instance.Configuration.Instance.BankPrice);
             Plugin.Instance.Bank.SetBank(player.SteamGroupID.ToString());
-            Plugin.Instance.Say(player, "bank_bought", Plugin.Instance.Configuration.Instance.BankPrice, Plugin.Instance.Configuration.Instance.MoneyName);
+            Plugin.Instance.Say(player, "bank_bought", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
             Plugin.Instance.Notify(player, $"{player.DisplayName} has bought a bank!");
         }
     }

@@ -4,6 +4,8 @@ namespace Arechi.GroupBank.Utils
 {
     public static class UconomyUtil
     {
+        public static string MoneyName => Uconomy.Instance.Configuration.Instance.MoneyName;
+
         public static decimal GetBalance(string playerId)
         {
             return Uconomy.Instance.Database.GetBalance(playerId);
