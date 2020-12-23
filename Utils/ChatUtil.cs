@@ -26,8 +26,8 @@ namespace Arechi.GroupBank.Utils
         public static void SendGroupMessage(this UnturnedPlayer player, string message, params object[] args)
         {
             Provider.clients
-                .Where(p => p.playerID.group == player.SteamGroupID)
                 .Select(UnturnedPlayer.FromSteamPlayer)
+                .Where(p => p.GetGroup() == player.GetGroup())
                 .ToList()
                 .ForEach(p => p.SendMessage(message, EChatMode.GROUP, args));
         }
