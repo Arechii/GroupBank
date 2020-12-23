@@ -1,6 +1,7 @@
 ﻿using Arechi.GroupBank.Utils;
 using Rocket.API;
 using Rocket.Unturned.Player;
+using SDG.Unturned;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,7 +27,7 @@ namespace Arechi.GroupBank.Commands
 
             if (command.Length != 2)
             {
-                Plugin.Instance.Say(player, "gmoney_usage");
+                player.SendMessage("gmoney_usage");
                 return;
             }
 
@@ -37,38 +38,38 @@ namespace Arechi.GroupBank.Commands
             {
                 if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint money))
                 {
-                    Plugin.Instance.Say(player, "dep_error");
+                    player.SendMessage("dep_error");
                     return;
                 }
 
                 if (money > (uint)UconomyUtil.GetBalance(player.Id))
                 {
-                    Plugin.Instance.Say(player, "dep_error_3", (int)UconomyUtil.GetBalance(player.Id), UconomyUtil.MoneyName);
+                    player.SendMessage("dep_error_3", EChatMode.SAY, (int)UconomyUtil.GetBalance(player.Id), UconomyUtil.MoneyName);
                     return;
                 }
 
                 UconomyUtil.IncreaseBalance(player.Id, -(int)money);
-                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank"));
-                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", (int)money) + $" [+{money}]", UconomyUtil.MoneyName));
+                player.SendGroupMessage("bank");
+                player.SendGroupMessage("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", (int)money) + $" [+{money}]", UconomyUtil.MoneyName);
             }
 
             if (command[0].Equals("-")) //Withdraw money from bank
             {
                 if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint money))
                 {
-                    Plugin.Instance.Say(player, "wit_error");
+                    player.SendMessage("wit_error");
                     return;
                 }
 
                 if (money > Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"))
                 {
-                    Plugin.Instance.Say(player, "wit_error_2");
+                    player.SendMessage("wit_error_2");
                     return;
                 }
 
                 UconomyUtil.IncreaseBalance(player.Id, money);
-                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank"));
-                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", -(int)money) + $" [-{money}]", UconomyUtil.MoneyName));
+                player.SendGroupMessage("bank");
+                player.SendGroupMessage("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", -(int)money) + $" [-{money}]", UconomyUtil.MoneyName);
             }
         }
     }

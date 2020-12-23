@@ -1,11 +1,8 @@
-﻿using Rocket.API.Collections;
+﻿using Arechi.GroupBank.Utils;
+using Rocket.API.Collections;
 using Rocket.Core.Plugins;
-using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
-using SDG.Unturned;
 using Steamworks;
-using System.Linq;
-using UnityEngine;
 using Logger = Rocket.Core.Logging.Logger;
 
 namespace Arechi.GroupBank
@@ -14,13 +11,11 @@ namespace Arechi.GroupBank
     {
         public static Plugin Instance;
         public Bank Bank;
-        public Color Color;
 
         protected override void Load()
         {
             Instance = this;
             Bank = new Bank();
-            Color = UnturnedChat.GetColorFromName(Configuration.Instance.Color, Color.green);
             
             Logger.Log($"{Bank.DeleteRows()} inactive banks have been deleted!");
         }
@@ -30,27 +25,17 @@ namespace Arechi.GroupBank
             Instance = null;
         }
 
-        public void Say(UnturnedPlayer player, string key, params object[] args) => UnturnedChat.Say(player, Translate(key, args), Color);
-
-        public void Notify(UnturnedPlayer player, string msg)
-        {
-            Provider.clients
-                .Where(p => p.playerID.group == player.SteamGroupID)
-                .ToList()
-                .ForEach(p => ChatManager.serverSendMessage(msg, Color, player.SteamPlayer(), p, EChatMode.GROUP));
-        }
-
         public bool CheckPlayer(UnturnedPlayer player)
         {
             if (player.SteamGroupID == CSteamID.Nil)
             {
-                Say(player, "no_group");
+                player.SendMessage("no_group");
                 return false;
             }
 
             if (!Bank.HasBank(player.SteamGroupID.ToString()))
             {
-                Say(player, "no_bank");
+                player.SendMessage("no_bank");
                 return false;
             }
 

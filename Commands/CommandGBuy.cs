@@ -26,26 +26,26 @@ namespace Arechi.GroupBank.Commands
 
             if (player.SteamGroupID == CSteamID.Nil)
             {
-                Plugin.Instance.Say(player, "no_group");
+                player.SendMessage("no_group");
                 return;
             }
 
             if (Plugin.Instance.Bank.HasBank(player.SteamGroupID.ToString()))
             {
-                Plugin.Instance.Say(player, "have_bank");
+                player.SendMessage("have_bank");
                 return;
             }
 
             if (UconomyUtil.GetBalance(player.Id) < Plugin.Instance.Configuration.Instance.BankPrice)
             {
-                Plugin.Instance.Say(player, "bank_error_2", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
+                player.SendMessage("bank_error_2", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
                 return;
             }
 
             UconomyUtil.IncreaseBalance(player.Id, -Plugin.Instance.Configuration.Instance.BankPrice);
             Plugin.Instance.Bank.SetBank(player.SteamGroupID.ToString());
-            Plugin.Instance.Say(player, "bank_bought", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
-            Plugin.Instance.Notify(player, $"{player.DisplayName} has bought a bank!");
+            player.SendMessage("bank_bought", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
+            player.SendGroupMessage($"{player.DisplayName} has bought a bank!");
         }
     }
 }

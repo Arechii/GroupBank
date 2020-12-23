@@ -23,12 +23,11 @@ namespace Arechi.GroupBank.Commands
         {
             UnturnedPlayer player = (UnturnedPlayer)caller;
 
-            if (Plugin.Instance.CheckPlayer(player))
-            {
-                Plugin.Instance.Say(player, "bank");
-                Plugin.Instance.Say(player, "bank_xp", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Experience"));
-                Plugin.Instance.Say(player, "bank_money", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"), UconomyUtil.MoneyName);
-            }
+            if (!Plugin.Instance.CheckPlayer(player)) return;
+
+            player.SendMessage("bank");
+            player.SendMessage("bank_xp", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Experience"));
+            player.SendMessage("bank_money", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"), UconomyUtil.MoneyName);
         }
     }
 }

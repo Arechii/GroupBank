@@ -5,6 +5,7 @@ namespace Arechi.GroupBank
     public class Config : IRocketPluginConfiguration
     {
         public string Color;
+        public string IconURL;
         public int BankPrice;
         public int InactiveDaysUntilDeletion;
         public string DatabaseAddress;
@@ -16,7 +17,8 @@ namespace Arechi.GroupBank
 
         public void LoadDefaults()
         {
-            Color = "Green";
+            Color = "#78b159";
+            IconURL = null;
             BankPrice = 100;
             InactiveDaysUntilDeletion = 7;
             DatabaseAddress = "localhost";
