@@ -22,15 +22,15 @@ namespace Arechi.GroupBank.Commands
         
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            UnturnedPlayer player = (UnturnedPlayer)caller;
+            var player = (UnturnedPlayer)caller;
 
-            if (player.SteamGroupID == CSteamID.Nil)
+            if (player.GetGroup() == CSteamID.Nil)
             {
                 player.SendMessage("no_group");
                 return;
             }
 
-            if (Plugin.Instance.Bank.GetBank(player.SteamGroupID.ToString()) == null)
+            if (player.GetBank() != null)
             {
                 player.SendMessage("have_bank");
                 return;
@@ -44,6 +44,7 @@ namespace Arechi.GroupBank.Commands
 
             UconomyUtil.IncreaseBalance(player.Id, -Plugin.Instance.Configuration.Instance.BankPrice);
             Plugin.Instance.Bank.AddBank(player.SteamGroupID.ToString());
+
             player.SendMessage("bank_bought", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
             player.SendGroupMessage("bank_bought_2", player.DisplayName);
         }

@@ -21,11 +21,14 @@ namespace Arechi.GroupBank.Commands
         
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            UnturnedPlayer player = (UnturnedPlayer)caller;
+            var player = (UnturnedPlayer)caller;
+            var bank = player.GetBank();
 
-            if (!Plugin.Instance.CheckPlayer(player)) return;
-
-            var bank = Plugin.Instance.Bank.GetBank(player.SteamGroupID.ToString());
+            if (bank == null)
+            {
+                player.SendMessage("no_bank");
+                return;
+            }
 
             player.SendMessage("bank");
             player.SendMessage("bank_xp", bank.Experience);

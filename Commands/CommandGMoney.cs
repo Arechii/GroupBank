@@ -1,7 +1,6 @@
 ﻿using Arechi.GroupBank.Utils;
 using Rocket.API;
 using Rocket.Unturned.Player;
-using SDG.Unturned;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,7 +22,7 @@ namespace Arechi.GroupBank.Commands
 
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            UnturnedPlayer player = (UnturnedPlayer)caller;
+            var player = (UnturnedPlayer)caller;
 
             if (command.Length != 2)
             {
@@ -31,10 +30,13 @@ namespace Arechi.GroupBank.Commands
                 return;
             }
 
-            if (!Plugin.Instance.CheckPlayer(player))
-                return;
+            var bank = player.GetBank();
 
-            var bank = Plugin.Instance.Bank.GetBank(player.SteamGroupID.ToString());
+            if (bank == null)
+            {
+                player.SendMessage("no_bank");
+                return;
+            }
 
             if (command[0].Equals("+")) //Deposit money to bank
             {
@@ -50,9 +52,11 @@ namespace Arechi.GroupBank.Commands
                     return;
                 }
 
-                UconomyUtil.IncreaseBalance(player.Id, -(int)money);
                 bank.Money += money;
+
+                UconomyUtil.IncreaseBalance(player.Id, -(int)money);
                 Plugin.Instance.Bank.UpdateBank(bank);
+
                 player.SendGroupMessage("bank");
                 player.SendGroupMessage("bank_money", $"{bank.Money} [+{money}]", UconomyUtil.MoneyName);
             }
@@ -71,9 +75,11 @@ namespace Arechi.GroupBank.Commands
                     return;
                 }
 
-                UconomyUtil.IncreaseBalance(player.Id, money);
                 bank.Money -= money;
+
+                UconomyUtil.IncreaseBalance(player.Id, money);
                 Plugin.Instance.Bank.UpdateBank(bank);
+
                 player.SendGroupMessage("bank");
                 player.SendGroupMessage("bank_money",  $"{bank.Money} [-{money}]", UconomyUtil.MoneyName);
             }

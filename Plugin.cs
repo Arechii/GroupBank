@@ -1,9 +1,6 @@
 ﻿using Arechi.GroupBank.Data;
-using Arechi.GroupBank.Utils;
 using Rocket.API.Collections;
 using Rocket.Core.Plugins;
-using Rocket.Unturned.Player;
-using Steamworks;
 using Logger = Rocket.Core.Logging.Logger;
 
 namespace Arechi.GroupBank
@@ -24,23 +21,6 @@ namespace Arechi.GroupBank
         protected override void Unload()
         {
             Instance = null;
-        }
-
-        public bool CheckPlayer(UnturnedPlayer player)
-        {
-            if (player.SteamGroupID == CSteamID.Nil)
-            {
-                player.SendMessage("no_group");
-                return false;
-            }
-
-            if (Bank.GetBank(player.SteamGroupID.ToString()) == null)
-            {
-                player.SendMessage("no_bank");
-                return false;
-            }
-
-            return true;
         }
 
         public override TranslationList DefaultTranslations => new TranslationList()

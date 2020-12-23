@@ -22,7 +22,7 @@ namespace Arechi.GroupBank.Commands
 
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            UnturnedPlayer player = (UnturnedPlayer)caller;
+            var player = (UnturnedPlayer)caller;
 
             if (command.Length != 2)
             {
@@ -30,10 +30,13 @@ namespace Arechi.GroupBank.Commands
                 return;
             }
 
-            if (!Plugin.Instance.CheckPlayer(player))
-                return;
+            var bank = player.GetBank();
 
-            var bank = Plugin.Instance.Bank.GetBank(player.SteamGroupID.ToString());
+            if (bank == null)
+            {
+                player.SendMessage("no_bank");
+                return;
+            }
 
             if (command[0].Equals("+")) //Deposit xp to bank
             {
@@ -51,7 +54,9 @@ namespace Arechi.GroupBank.Commands
 
                 player.Experience -= xp;
                 bank.Experience += xp;
+
                 Plugin.Instance.Bank.UpdateBank(bank);
+
                 player.SendGroupMessage("bank");
                 player.SendGroupMessage("bank_xp", $"{bank.Experience} [+{xp}]");
             }
@@ -72,7 +77,9 @@ namespace Arechi.GroupBank.Commands
 
                 player.Experience += xp;
                 bank.Experience -= xp;
+
                 Plugin.Instance.Bank.UpdateBank(bank);
+
                 player.SendGroupMessage("bank");
                 player.SendGroupMessage("bank_xp", $"{bank.Experience} [-{xp}]");
             }
