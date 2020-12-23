@@ -4,16 +4,15 @@ using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
-using System;
 using System.Linq;
 using UnityEngine;
-using C = Rocket.Core.Logging.Logger;
+using Logger = Rocket.Core.Logging.Logger;
 
 namespace Arechi.GroupBank
 {
     public class Plugin : RocketPlugin<Config>
     {
-        public static Plugin Instance { get; private set; }
+        public static Plugin Instance;
         public Bank Bank;
         public Color Color;
 
@@ -22,14 +21,13 @@ namespace Arechi.GroupBank
             Instance = this;
             Bank = new Bank();
             Color = UnturnedChat.GetColorFromName(Configuration.Instance.Color, Color.green);
-            C.Log("GroupBank has been loaded!");
-            C.Log($"{Bank.DeleteRows()} inactive banks have been deleted!", ConsoleColor.Yellow);
+            
+            Logger.Log($"{Bank.DeleteRows()} inactive banks have been deleted!");
         }
 
         protected override void Unload()
         {
             Instance = null;
-            C.Log("GroupBank has been unloaded!");
         }
 
         public void Say(UnturnedPlayer player, string key, params object[] args) => UnturnedChat.Say(player, Translate(key, args), Color);
