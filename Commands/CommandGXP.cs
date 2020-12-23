@@ -61,6 +61,7 @@ namespace Arechi.GroupBank.Commands
             Plugin.Instance.Bank.UpdateBank(bank);
 
             player.SendGroupMessage("BANK");
+            player.SendGroupMessage("BANK_MONEY", bank.Money, UconomyUtil.MoneyName);
             player.SendGroupMessage("BANK_EXP", $"{bank.Experience} [{(deposit ? "+" : "-")} {experience}]");
         }
     }

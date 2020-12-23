@@ -55,6 +55,7 @@ namespace Arechi.GroupBank.Commands
 
             player.SendGroupMessage("BANK");
             player.SendGroupMessage("BANK_MONEY", $"{bank.Money} [{(deposit ? "+" : "-")} {money}]", UconomyUtil.MoneyName);
+            player.SendGroupMessage("BANK_EXP", bank.Experience);
         }
     }
 }
