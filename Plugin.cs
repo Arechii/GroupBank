@@ -55,6 +55,7 @@ namespace Arechi.GroupBank
             { "bank_error", "Bank creation failed. You already have one for your group!" },
             { "bank_error_2", "Bank creation failed. You need to pay {0} {1} for one!" },
             { "bank_bought", "Succesfully bought a bank for your group! You paid {0} {1}." },
+            { "bank_bought_2", "{0} has bought a group bank!" },
             { "dep_error", "Something went wrong. Input a number." },
             { "dep_error_2", "You only have {0} Experience!" },
             { "dep_error_3", "You only have {0} {1}!" },
