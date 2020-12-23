@@ -24,9 +24,10 @@ namespace Arechi.GroupBank.Commands
         {
             var player = (UnturnedPlayer)caller;
 
-            if (command.Length != 2)
+            if (command.Length != 2 || !command[0].Equals("+") || !command[0].Equals("-") ||
+                !command[1].All(char.IsDigit) || !uint.TryParse(command[1], out var experience))
             {
-                player.SendMessage("gxp_usage");
+                player.SendMessage($"/{Name} {Syntax}");
                 return;
             }
 
@@ -34,55 +35,33 @@ namespace Arechi.GroupBank.Commands
 
             if (bank == null)
             {
-                player.SendMessage("no_bank");
+                player.SendMessage("NO_BANK");
                 return;
             }
 
-            if (command[0].Equals("+")) //Deposit xp to bank
+            var deposit = command[0].Equals("+");
+
+            if (experience > (deposit ? player.Experience : bank.Experience))
             {
-                if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint xp))
-                {
-                    player.SendMessage("dep_error");
-                    return;
-                }
-
-                if (xp > player.Experience)
-                {
-                    player.SendMessage("dep_error_2", player.Experience);
-                    return;
-                }
-
-                player.Experience -= xp;
-                bank.Experience += xp;
-
-                Plugin.Instance.Bank.UpdateBank(bank);
-
-                player.SendGroupMessage("bank");
-                player.SendGroupMessage("bank_xp", $"{bank.Experience} [+{xp}]");
+                player.SendMessage(deposit ? "DEPOSIT_ERROR" : "WITHDRAW_ERROR", deposit ? player.Experience : bank.Experience);
+                return;
             }
 
-            if (command[0].Equals("-")) //Withdraw xp from bank
+            if (deposit)
             {
-                if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint xp))
-                {
-                    player.SendMessage("wit_error");
-                    return;
-                }
-
-                if (xp > bank.Experience)
-                {
-                    player.SendMessage("wit_error_2");
-                    return;
-                }
-
-                player.Experience += xp;
-                bank.Experience -= xp;
-
-                Plugin.Instance.Bank.UpdateBank(bank);
-
-                player.SendGroupMessage("bank");
-                player.SendGroupMessage("bank_xp", $"{bank.Experience} [-{xp}]");
+                bank.Experience += experience;
+                player.Experience -= experience;
             }
+            else
+            {
+                bank.Experience -= experience;
+                player.Experience += experience;
+            }
+
+            Plugin.Instance.Bank.UpdateBank(bank);
+
+            player.SendGroupMessage("BANK");
+            player.SendGroupMessage("BANK_EXP", $"{bank.Experience} [{(deposit ? "+" : "-")} {experience}]");
         }
     }
 }

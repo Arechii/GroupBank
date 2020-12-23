@@ -25,23 +25,17 @@ namespace Arechi.GroupBank
 
         public override TranslationList DefaultTranslations => new TranslationList()
         {
-            { "bank", "｢ Group Bank ｣" },
-            { "bank_xp", "# Experience: {0}" },
-            { "bank_money", "# {1}: {0}" },
-            { "gxp_usage", "Error in command. Try /gxp +|- amount" },
-            { "gmoney_usage", "Error in command. Try /gmoney +|- amount" },
-            { "no_group", "You do not have a group!" },
-            { "no_bank", "Your group does not have a bank!" },
-            { "have_bank", "Your group already has a bank!" },
-            { "bank_error", "Bank creation failed. You already have one for your group!" },
-            { "bank_error_2", "Bank creation failed. You need to pay {0} {1} for one!" },
-            { "bank_bought", "Succesfully bought a bank for your group! You paid {0} {1}." },
-            { "bank_bought_2", "{0} has bought a group bank!" },
-            { "dep_error", "Something went wrong. Input a number." },
-            { "dep_error_2", "You only have {0} Experience!" },
-            { "dep_error_3", "You only have {0} {1}!" },
-            { "wit_error", "Something went wrong. Input a number." },
-            { "wit_error_2", "Your bank does not have this!" },
+            { "BANK", "｢ Group Bank ｣" },
+            { "BANK_EXP", "# Experience: {0}" },
+            { "BANK_MONEY", "# {1}: {0}" },
+            { "NO_GROUP", "You do not have a group!" },
+            { "NO_BANK", "Your group does not have a bank!" },
+            { "ALREADY_HAVE_A_BANK", "Your group already has a bank!" },
+            { "BANK_BUY_ERROR", "Bank creation failed. You need to pay {0} {1} for one!" },
+            { "BANK_BOUGHT", "Succesfully bought a bank for your group! You paid {0} {1}." },
+            { "BANK_BOUGHT_GROUP", "{0} has bought a group bank!" },
+            { "DEPOSIT_ERROR", "You only have {0}!" },
+            { "WITHDRAW_ERROR", "Your bank only has {0}!" },
         };
     }
 }

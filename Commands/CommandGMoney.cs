@@ -24,9 +24,10 @@ namespace Arechi.GroupBank.Commands
         {
             var player = (UnturnedPlayer)caller;
 
-            if (command.Length != 2)
+            if (command.Length != 2 || !command[0].Equals("+") || !command[0].Equals("-") || 
+                !command[1].All(char.IsDigit) || !decimal.TryParse(command[1], out var money))
             {
-                player.SendMessage("gmoney_usage");
+                player.SendMessage($"/{Name} {Syntax}");
                 return;
             }
 
@@ -34,55 +35,26 @@ namespace Arechi.GroupBank.Commands
 
             if (bank == null)
             {
-                player.SendMessage("no_bank");
+                player.SendMessage("NO_BANK");
                 return;
             }
 
-            if (command[0].Equals("+")) //Deposit money to bank
+            var deposit = command[0].Equals("+");
+            var balance = player.GetBalance();
+
+            if (money > (deposit ? balance : bank.Money))
             {
-                if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint money))
-                {
-                    player.SendMessage("dep_error");
-                    return;
-                }
-
-                if (money > (uint)UconomyUtil.GetBalance(player.Id))
-                {
-                    player.SendMessage("dep_error_3", (int)UconomyUtil.GetBalance(player.Id), UconomyUtil.MoneyName);
-                    return;
-                }
-
-                bank.Money += money;
-
-                UconomyUtil.IncreaseBalance(player.Id, -(int)money);
-                Plugin.Instance.Bank.UpdateBank(bank);
-
-                player.SendGroupMessage("bank");
-                player.SendGroupMessage("bank_money", $"{bank.Money} [+{money}]", UconomyUtil.MoneyName);
+                player.SendMessage(deposit ? "DEPOSIT_ERROR" : "WITHDRAW_ERROR", deposit ? balance : bank.Money);
+                return;
             }
 
-            if (command[0].Equals("-")) //Withdraw money from bank
-            {
-                if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint money))
-                {
-                    player.SendMessage("wit_error");
-                    return;
-                }
+            bank.Money += (deposit ? money : -money);
 
-                if (money > bank.Money)
-                {
-                    player.SendMessage("wit_error_2");
-                    return;
-                }
+            UconomyUtil.IncreaseBalance(player.Id, deposit ? -money : money);
+            Plugin.Instance.Bank.UpdateBank(bank);
 
-                bank.Money -= money;
-
-                UconomyUtil.IncreaseBalance(player.Id, money);
-                Plugin.Instance.Bank.UpdateBank(bank);
-
-                player.SendGroupMessage("bank");
-                player.SendGroupMessage("bank_money",  $"{bank.Money} [-{money}]", UconomyUtil.MoneyName);
-            }
+            player.SendGroupMessage("BANK");
+            player.SendGroupMessage("BANK_MONEY", $"{bank.Money} [{(deposit ? "+" : "-")} {money}]", UconomyUtil.MoneyName);
         }
     }
 }

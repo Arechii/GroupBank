@@ -26,27 +26,27 @@ namespace Arechi.GroupBank.Commands
 
             if (player.GetGroup() == CSteamID.Nil)
             {
-                player.SendMessage("no_group");
+                player.SendMessage("NO_GROUP");
                 return;
             }
 
             if (player.GetBank() != null)
             {
-                player.SendMessage("have_bank");
+                player.SendMessage("ALREADY_HAVE_A_BANK");
                 return;
             }
 
             if (UconomyUtil.GetBalance(player.Id) < Plugin.Instance.Configuration.Instance.BankPrice)
             {
-                player.SendMessage("bank_error_2", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
+                player.SendMessage("BANK_BUY_ERROR", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
                 return;
             }
 
             UconomyUtil.IncreaseBalance(player.Id, -Plugin.Instance.Configuration.Instance.BankPrice);
             Plugin.Instance.Bank.AddBank(player.SteamGroupID.ToString());
 
-            player.SendMessage("bank_bought", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
-            player.SendGroupMessage("bank_bought_2", player.DisplayName);
+            player.SendMessage("BANK_BOUGHT", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
+            player.SendGroupMessage("BANK_BOUGHT_GROUP", player.DisplayName);
         }
     }
 }

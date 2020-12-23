@@ -6,6 +6,11 @@ namespace Arechi.GroupBank.Utils
 {
     public static class PlayerUtil
     {
+        public static decimal GetBalance(this UnturnedPlayer player)
+        {
+            return UconomyUtil.GetBalance(player.Id);
+        }
+
         public static Bank GetBank(this UnturnedPlayer player)
         {
             var group = player.GetGroup();

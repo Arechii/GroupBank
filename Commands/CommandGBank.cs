@@ -26,13 +26,13 @@ namespace Arechi.GroupBank.Commands
 
             if (bank == null)
             {
-                player.SendMessage("no_bank");
+                player.SendMessage("NO_BANK");
                 return;
             }
 
-            player.SendMessage("bank");
-            player.SendMessage("bank_xp", bank.Experience);
-            player.SendMessage("bank_money", bank.Money, UconomyUtil.MoneyName);
+            player.SendMessage("BANK");
+            player.SendMessage("BANK_EXP", bank.Experience);
+            player.SendMessage("BANK_MONEY", bank.Money, UconomyUtil.MoneyName);
         }
     }
 }
