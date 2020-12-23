@@ -30,7 +30,7 @@ namespace Arechi.GroupBank.Commands
                 return;
             }
 
-            if (Plugin.Instance.Bank.HasBank(player.SteamGroupID.ToString()))
+            if (Plugin.Instance.Bank.GetBank(player.SteamGroupID.ToString()) == null)
             {
                 player.SendMessage("have_bank");
                 return;
@@ -43,7 +43,7 @@ namespace Arechi.GroupBank.Commands
             }
 
             UconomyUtil.IncreaseBalance(player.Id, -Plugin.Instance.Configuration.Instance.BankPrice);
-            Plugin.Instance.Bank.SetBank(player.SteamGroupID.ToString());
+            Plugin.Instance.Bank.AddBank(player.SteamGroupID.ToString());
             player.SendMessage("bank_bought", Plugin.Instance.Configuration.Instance.BankPrice, UconomyUtil.MoneyName);
             player.SendGroupMessage("bank_bought_2", player.DisplayName);
         }

@@ -34,6 +34,8 @@ namespace Arechi.GroupBank.Commands
             if (!Plugin.Instance.CheckPlayer(player))
                 return;
 
+            var bank = Plugin.Instance.Bank.GetBank(player.SteamGroupID.ToString());
+
             if (command[0].Equals("+")) //Deposit money to bank
             {
                 if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint money))
@@ -44,13 +46,15 @@ namespace Arechi.GroupBank.Commands
 
                 if (money > (uint)UconomyUtil.GetBalance(player.Id))
                 {
-                    player.SendMessage("dep_error_3", EChatMode.SAY, (int)UconomyUtil.GetBalance(player.Id), UconomyUtil.MoneyName);
+                    player.SendMessage("dep_error_3", (int)UconomyUtil.GetBalance(player.Id), UconomyUtil.MoneyName);
                     return;
                 }
 
                 UconomyUtil.IncreaseBalance(player.Id, -(int)money);
+                bank.Money += money;
+                Plugin.Instance.Bank.UpdateBank(bank);
                 player.SendGroupMessage("bank");
-                player.SendGroupMessage("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", (int)money) + $" [+{money}]", UconomyUtil.MoneyName);
+                player.SendGroupMessage("bank_money", $"{bank.Money} [+{money}]", UconomyUtil.MoneyName);
             }
 
             if (command[0].Equals("-")) //Withdraw money from bank
@@ -61,15 +65,17 @@ namespace Arechi.GroupBank.Commands
                     return;
                 }
 
-                if (money > Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"))
+                if (money > bank.Money)
                 {
                     player.SendMessage("wit_error_2");
                     return;
                 }
 
                 UconomyUtil.IncreaseBalance(player.Id, money);
+                bank.Money -= money;
+                Plugin.Instance.Bank.UpdateBank(bank);
                 player.SendGroupMessage("bank");
-                player.SendGroupMessage("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", -(int)money) + $" [-{money}]", UconomyUtil.MoneyName);
+                player.SendGroupMessage("bank_money",  $"{bank.Money} [-{money}]", UconomyUtil.MoneyName);
             }
         }
     }

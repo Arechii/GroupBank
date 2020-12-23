@@ -25,9 +25,11 @@ namespace Arechi.GroupBank.Commands
 
             if (!Plugin.Instance.CheckPlayer(player)) return;
 
+            var bank = Plugin.Instance.Bank.GetBank(player.SteamGroupID.ToString());
+
             player.SendMessage("bank");
-            player.SendMessage("bank_xp", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Experience"));
-            player.SendMessage("bank_money", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"), UconomyUtil.MoneyName);
+            player.SendMessage("bank_xp", bank.Experience);
+            player.SendMessage("bank_money", bank.Money, UconomyUtil.MoneyName);
         }
     }
 }

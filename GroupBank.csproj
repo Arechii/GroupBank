@@ -88,6 +88,8 @@
     <Compile Include="Commands\CommandGMoney.cs" />
     <Compile Include="Commands\CommandGXP.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Data\BankData.cs" />
+    <Compile Include="Data\DatabaseConnection.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\ChatUtil.cs" />

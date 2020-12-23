@@ -33,6 +33,8 @@ namespace Arechi.GroupBank.Commands
             if (!Plugin.Instance.CheckPlayer(player))
                 return;
 
+            var bank = Plugin.Instance.Bank.GetBank(player.SteamGroupID.ToString());
+
             if (command[0].Equals("+")) //Deposit xp to bank
             {
                 if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint xp))
@@ -48,8 +50,10 @@ namespace Arechi.GroupBank.Commands
                 }
 
                 player.Experience -= xp;
+                bank.Experience += xp;
+                Plugin.Instance.Bank.UpdateBank(bank);
                 player.SendGroupMessage("bank");
-                player.SendGroupMessage("bank_xp", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Experience", (int)xp) + $" [+{xp}]");
+                player.SendGroupMessage("bank_xp", $"{bank.Experience} [+{xp}]");
             }
 
             if (command[0].Equals("-")) //Withdraw xp from bank
@@ -60,15 +64,17 @@ namespace Arechi.GroupBank.Commands
                     return;
                 }
 
-                if (xp > Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Experience"))
+                if (xp > bank.Experience)
                 {
                     player.SendMessage("wit_error_2");
                     return;
                 }
 
                 player.Experience += xp;
+                bank.Experience -= xp;
+                Plugin.Instance.Bank.UpdateBank(bank);
                 player.SendGroupMessage("bank");
-                player.SendGroupMessage("bank_xp", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Experience", -(int)xp) + $" [-{xp}]");
+                player.SendGroupMessage("bank_xp", $"{bank.Experience} [-{xp}]");
             }
         }
     }

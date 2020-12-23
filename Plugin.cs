@@ -1,4 +1,5 @@
-﻿using Arechi.GroupBank.Utils;
+﻿using Arechi.GroupBank.Data;
+using Arechi.GroupBank.Utils;
 using Rocket.API.Collections;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Player;
@@ -10,14 +11,14 @@ namespace Arechi.GroupBank
     public class Plugin : RocketPlugin<Config>
     {
         public static Plugin Instance;
-        public Bank Bank;
+        public BankData Bank;
 
         protected override void Load()
         {
             Instance = this;
-            Bank = new Bank();
+            Bank = new BankData(Configuration.Instance);
             
-            Logger.Log($"{Bank.DeleteRows()} inactive banks have been deleted!");
+            Logger.Log($"{Bank.DeleteInactiveBanks()} inactive banks have been deleted!");
         }
 
         protected override void Unload()
@@ -33,7 +34,7 @@ namespace Arechi.GroupBank
                 return false;
             }
 
-            if (!Bank.HasBank(player.SteamGroupID.ToString()))
+            if (Bank.GetBank(player.SteamGroupID.ToString()) == null)
             {
                 player.SendMessage("no_bank");
                 return false;
