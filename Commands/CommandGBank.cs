@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Arechi.GroupBank.Commands
 {
-    public class CGBank : IRocketCommand
+    public class CommandGBank : IRocketCommand
     {
         public string Name => "gbank";
 
@@ -14,7 +14,7 @@ namespace Arechi.GroupBank.Commands
 
         public List<string> Aliases => new List<string>();
 
-        public List<string> Permissions => new List<string>() { "gbank" };
+        public List<string> Permissions => new List<string>();
 
         public AllowedCaller AllowedCaller => AllowedCaller.Player;
         
@@ -22,11 +22,11 @@ namespace Arechi.GroupBank.Commands
         {
             UnturnedPlayer player = (UnturnedPlayer)caller;
 
-            if (Main.Instance.CheckPlayer(player))
+            if (Plugin.Instance.CheckPlayer(player))
             {
-                Main.Instance.Say(player, "bank");
-                Main.Instance.Say(player, "bank_xp", Main.Instance.Bank.Get(player.SteamGroupID.ToString(), "Experience"));
-                Main.Instance.Say(player, "bank_money", Main.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"), Main.Instance.Configuration.Instance.MoneyName);
+                Plugin.Instance.Say(player, "bank");
+                Plugin.Instance.Say(player, "bank_xp", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Experience"));
+                Plugin.Instance.Say(player, "bank_money", Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"), Plugin.Instance.Configuration.Instance.MoneyName);
             }
         }
     }

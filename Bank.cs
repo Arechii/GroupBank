@@ -17,11 +17,11 @@ namespace Arechi.GroupBank
 
             if (_connection == null)
             {
-                Main.Instance.UnloadPlugin();
+                Plugin.Instance.UnloadPlugin();
                 return;
             }
 
-            _table = Main.Instance.Configuration.Instance.DatabaseTableName;
+            _table = Plugin.Instance.Configuration.Instance.DatabaseTableName;
             CheckBank();
         }
 
@@ -31,11 +31,11 @@ namespace Arechi.GroupBank
             {
                 MySqlConnectionStringBuilder connectionString = new MySqlConnectionStringBuilder
                 {
-                    Server = Main.Instance.Configuration.Instance.DatabaseAddress,
-                    Port = Main.Instance.Configuration.Instance.DatabasePort,
-                    Database = Main.Instance.Configuration.Instance.DatabaseName,
-                    UserID = Main.Instance.Configuration.Instance.DatabaseUsername,
-                    Password = Main.Instance.Configuration.Instance.DatabasePassword,
+                    Server = Plugin.Instance.Configuration.Instance.DatabaseAddress,
+                    Port = Plugin.Instance.Configuration.Instance.DatabasePort,
+                    Database = Plugin.Instance.Configuration.Instance.DatabaseName,
+                    UserID = Plugin.Instance.Configuration.Instance.DatabaseUsername,
+                    Password = Plugin.Instance.Configuration.Instance.DatabasePassword,
                 };
 
                 return new MySqlConnection(connectionString.ToString()); ;
@@ -141,7 +141,7 @@ namespace Arechi.GroupBank
                 MySqlCommand command = _connection.CreateCommand();
                 command.CommandText = $"DELETE FROM `{_table}` WHERE `LastAccessed` < DATE_SUB(NOW(), INTERVAL @interval DAY)";
                 command.Prepare();
-                command.Parameters.AddWithValue("@interval", Main.Instance.Configuration.Instance.InactiveDaysUntilDeletion);
+                command.Parameters.AddWithValue("@interval", Plugin.Instance.Configuration.Instance.InactiveDaysUntilDeletion);
                 return command.ExecuteNonQuery();
             }
             catch (Exception ex)

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Arechi.GroupBank.Commands
 {
-    public class CGMoney : IRocketCommand
+    public class CommandGMoney : IRocketCommand
     {
         public string Name => "gmoney";
 
@@ -16,7 +16,7 @@ namespace Arechi.GroupBank.Commands
 
         public List<string> Aliases => new List<string>();
 
-        public List<string> Permissions => new List<string>() { "gmoney" };
+        public List<string> Permissions => new List<string>();
 
         public AllowedCaller AllowedCaller => AllowedCaller.Player; 
 
@@ -26,49 +26,49 @@ namespace Arechi.GroupBank.Commands
 
             if (command.Length != 2)
             {
-                Main.Instance.Say(player, "gmoney_usage");
+                Plugin.Instance.Say(player, "gmoney_usage");
                 return;
             }
 
-            if (!Main.Instance.CheckPlayer(player))
+            if (!Plugin.Instance.CheckPlayer(player))
                 return;
 
             if (command[0].Equals("+")) //Deposit money to bank
             {
                 if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint money))
                 {
-                    Main.Instance.Say(player, "dep_error");
+                    Plugin.Instance.Say(player, "dep_error");
                     return;
                 }
 
                 if (money > (uint)Uconomy.Instance.Database.GetBalance(player.ToString()))
                 {
-                    Main.Instance.Say(player, "dep_error_3", (int)Uconomy.Instance.Database.GetBalance(player.ToString()), Main.Instance.Configuration.Instance.MoneyName);
+                    Plugin.Instance.Say(player, "dep_error_3", (int)Uconomy.Instance.Database.GetBalance(player.ToString()), Plugin.Instance.Configuration.Instance.MoneyName);
                     return;
                 }
 
                 Uconomy.Instance.Database.IncreaseBalance(player.ToString(), -(int)money);
-                Main.Instance.Notify(player, Main.Instance.Translate("bank"));
-                Main.Instance.Notify(player, Main.Instance.Translate("bank_money", Main.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", (int)money) + $" [+{money}]", Main.Instance.Configuration.Instance.MoneyName));
+                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank"));
+                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", (int)money) + $" [+{money}]", Plugin.Instance.Configuration.Instance.MoneyName));
             }
 
             if (command[0].Equals("-")) //Withdraw money from bank
             {
                 if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint money))
                 {
-                    Main.Instance.Say(player, "wit_error");
+                    Plugin.Instance.Say(player, "wit_error");
                     return;
                 }
 
-                if (money > Main.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"))
+                if (money > Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Money"))
                 {
-                    Main.Instance.Say(player, "wit_error_2");
+                    Plugin.Instance.Say(player, "wit_error_2");
                     return;
                 }
 
                 Uconomy.Instance.Database.IncreaseBalance(player.ToString(), money);
-                Main.Instance.Notify(player, Main.Instance.Translate("bank"));
-                Main.Instance.Notify(player, Main.Instance.Translate("bank_money", Main.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", -(int)money) + $" [-{money}]", Main.Instance.Configuration.Instance.MoneyName));
+                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank"));
+                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", -(int)money) + $" [-{money}]", Plugin.Instance.Configuration.Instance.MoneyName));
             }
         }
     }

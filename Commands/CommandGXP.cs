@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Arechi.GroupBank.Commands
 {
-    public class CGXP : IRocketCommand
+    public class CommandGXP : IRocketCommand
     {
         public string Name => "gxp";
 
@@ -15,7 +15,7 @@ namespace Arechi.GroupBank.Commands
 
         public List<string> Aliases => new List<string>();
 
-        public List<string> Permissions => new List<string>() { "gxp" };
+        public List<string> Permissions => new List<string>();
 
         public AllowedCaller AllowedCaller => AllowedCaller.Player;
 
@@ -25,49 +25,49 @@ namespace Arechi.GroupBank.Commands
 
             if (command.Length != 2)
             {
-                Main.Instance.Say(player, "gxp_usage");
+                Plugin.Instance.Say(player, "gxp_usage");
                 return;
             }
 
-            if (!Main.Instance.CheckPlayer(player))
+            if (!Plugin.Instance.CheckPlayer(player))
                 return;
 
             if (command[0].Equals("+")) //Deposit xp to bank
             {
                 if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint xp))
                 {
-                    Main.Instance.Say(player, "dep_error");
+                    Plugin.Instance.Say(player, "dep_error");
                     return;
                 }
 
                 if (xp > player.Experience)
                 {
-                    Main.Instance.Say(player, "dep_error_2", player.Experience);
+                    Plugin.Instance.Say(player, "dep_error_2", player.Experience);
                     return;
                 }
 
                 player.Experience -= xp;
-                Main.Instance.Notify(player, Main.Instance.Translate("bank"));
-                Main.Instance.Notify(player, Main.Instance.Translate("bank_xp", Main.Instance.Bank.Update(player.SteamGroupID.ToString(), "Experience", (int)xp) + $" [+{xp}]"));
+                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank"));
+                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_xp", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Experience", (int)xp) + $" [+{xp}]"));
             }
 
             if (command[0].Equals("-")) //Withdraw xp from bank
             {
                 if (!command[1].All(char.IsDigit) || !uint.TryParse(command[1], out uint xp))
                 {
-                    Main.Instance.Say(player, "wit_error");
+                    Plugin.Instance.Say(player, "wit_error");
                     return;
                 }
 
-                if (xp > Main.Instance.Bank.Get(player.SteamGroupID.ToString(), "Experience"))
+                if (xp > Plugin.Instance.Bank.Get(player.SteamGroupID.ToString(), "Experience"))
                 {
-                    Main.Instance.Say(player, "wit_error_2");
+                    Plugin.Instance.Say(player, "wit_error_2");
                     return;
                 }
 
                 player.Experience += xp;
-                Main.Instance.Notify(player, Main.Instance.Translate("bank"));
-                Main.Instance.Notify(player, Main.Instance.Translate("bank_xp", Main.Instance.Bank.Update(player.SteamGroupID.ToString(), "Experience", -(int)xp) + $" [-{xp}]"));
+                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank"));
+                Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_xp", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Experience", -(int)xp) + $" [-{xp}]"));
             }
         }
     }
