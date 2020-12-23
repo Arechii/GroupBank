@@ -1,4 +1,4 @@
-﻿using fr34kyn01535.Uconomy;
+﻿using Arechi.GroupBank.Utils;
 using Rocket.API;
 using Rocket.Unturned.Player;
 using Steamworks;
@@ -36,13 +36,13 @@ namespace Arechi.GroupBank.Commands
                 return;
             }
 
-            if (Uconomy.Instance.Database.GetBalance(player.ToString()) < Plugin.Instance.Configuration.Instance.BankPrice)
+            if (UconomyUtil.GetBalance(player.Id) < Plugin.Instance.Configuration.Instance.BankPrice)
             {
                 Plugin.Instance.Say(player, "bank_error_2", Plugin.Instance.Configuration.Instance.BankPrice, Plugin.Instance.Configuration.Instance.MoneyName);
                 return;
             }
 
-            Uconomy.Instance.Database.IncreaseBalance(player.ToString(), -Plugin.Instance.Configuration.Instance.BankPrice);
+            UconomyUtil.IncreaseBalance(player.Id, -Plugin.Instance.Configuration.Instance.BankPrice);
             Plugin.Instance.Bank.SetBank(player.SteamGroupID.ToString());
             Plugin.Instance.Say(player, "bank_bought", Plugin.Instance.Configuration.Instance.BankPrice, Plugin.Instance.Configuration.Instance.MoneyName);
             Plugin.Instance.Notify(player, $"{player.DisplayName} has bought a bank!");

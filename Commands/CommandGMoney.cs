@@ -1,4 +1,4 @@
-﻿using fr34kyn01535.Uconomy;
+﻿using Arechi.GroupBank.Utils;
 using Rocket.API;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
@@ -41,13 +41,13 @@ namespace Arechi.GroupBank.Commands
                     return;
                 }
 
-                if (money > (uint)Uconomy.Instance.Database.GetBalance(player.ToString()))
+                if (money > (uint)UconomyUtil.GetBalance(player.Id))
                 {
-                    Plugin.Instance.Say(player, "dep_error_3", (int)Uconomy.Instance.Database.GetBalance(player.ToString()), Plugin.Instance.Configuration.Instance.MoneyName);
+                    Plugin.Instance.Say(player, "dep_error_3", (int)UconomyUtil.GetBalance(player.Id), Plugin.Instance.Configuration.Instance.MoneyName);
                     return;
                 }
 
-                Uconomy.Instance.Database.IncreaseBalance(player.ToString(), -(int)money);
+                UconomyUtil.IncreaseBalance(player.Id, -(int)money);
                 Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank"));
                 Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", (int)money) + $" [+{money}]", Plugin.Instance.Configuration.Instance.MoneyName));
             }
@@ -66,7 +66,7 @@ namespace Arechi.GroupBank.Commands
                     return;
                 }
 
-                Uconomy.Instance.Database.IncreaseBalance(player.ToString(), money);
+                UconomyUtil.IncreaseBalance(player.Id, money);
                 Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank"));
                 Plugin.Instance.Notify(player, Plugin.Instance.Translate("bank_money", Plugin.Instance.Bank.Update(player.SteamGroupID.ToString(), "Money", -(int)money) + $" [-{money}]", Plugin.Instance.Configuration.Instance.MoneyName));
             }

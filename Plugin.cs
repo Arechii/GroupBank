@@ -11,9 +11,9 @@ using C = Rocket.Core.Logging.Logger;
 
 namespace Arechi.GroupBank
 {
-    public class Main : RocketPlugin<Config>
+    public class Plugin : RocketPlugin<Config>
     {
-        public static Main Instance { get; private set; }
+        public static Plugin Instance { get; private set; }
         public Bank Bank;
         public Color Color;
 
